@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head></head>
+<body>
+<div id="pluginBox"></div>
+<script src="../../../ui6/dist/ui6.js"></script>
+<script>
+async function main() {
+  var pluginHtml = await ui6.ajax({method:'GET', url:'plugin.html'})
+  ui6.html('#pluginBox', pluginHtml)
+  await ui6.scriptLoad('plugin.js')
+}
+
+main()
+</script>
+</body>
+</html>
