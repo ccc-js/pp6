@@ -1,0 +1,68 @@
+<html>
+<head>
+<style>
+@media print {
+
+  .pagebreak { page-break-before: always; } /* page-break-after works, as well */
+
+}
+
+
+@page {
+  size: A4;
+  margin: 2cm;
+  counter-increment: page;
+  content: "Page " counter(page) " of " counter(pages);
+
+}
+
+@page @bottom-center { content: counter(page) }
+
+@page :first {
+  margin-top: 10cm;
+}
+
+@page p {
+  orphans:3;
+  widows:2;
+}
+
+@page .pageNumber {
+  content: counter(page);
+}
+
+@page .date {
+  content: "2011/01/01";
+}
+
+
+
+body {
+  counter-reset: section;                       /* Set a counter named 'section', and its initial value is 0. */
+}
+
+h3::before {
+  counter-increment: section;                   /* Increment the value of section counter by 1 */
+  content: "Section " counter(section) ": ";    /* Display the word 'Section ', the value of 
+                                                   section counter, and a colon before the content
+                                                   of each h3 */
+}
+
+</style>
+</head>
+<body>
+  這個網頁的 @media print 效果要 按列印才看得到
+    <div class="pagebreak"> Page1</div>
+    <span id="pageNumber"></span>
+    <div class="pagebreak"> Page2</div>
+    <div class="pagebreak"> Page3</div>
+    <div class="pagebreak"> Page4</div>
+    <h3>Introduction</h3>
+    <h3>Body</h3>
+    <h3>Conclusion</h3>
+    <span id="pageNumber"></span>
+</body>
+</html>
+
+
+

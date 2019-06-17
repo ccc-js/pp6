@@ -1,0 +1,32 @@
+<html>
+<head>
+<style>
+.content {
+    display: table;
+}
+
+.pageFooter {
+    display: table-footer-group;
+}
+
+.pageFooter:after {
+    counter-increment: page;
+    content: counter(page);
+}
+
+</style>
+</head>
+<body>
+  <div class="content">
+    <div class="pageFooter">Page </div>
+    multi-page content here...
+  </div>
+  <div class="content">
+    <div class="pageFooter">Page </div>
+    multi-page content here...
+  </div>
+</body>
+</html>
+
+
+
