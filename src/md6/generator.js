@@ -23,6 +23,57 @@ let rs = function rewriteSpecial(str) {
   return r.join('')
 }
 
+class Html {
+  // inline
+  text(x) { return x.body }
+  code2(x) { return `<code>${x.body}</code>` }
+  code1(x) { return `<code>${x.body}</code>` }
+  star2(x) { return `<strong>${rs(x.body)}</strong>` }
+  star1(x) { return `<strong>${rs(x.body)}</strong>` }
+  under2(x) { return `<em>${rs(x.body)}</em>` }
+  under1(x) { return `<em>${rs(x.body)}</em>` }
+  url(x) { return `<a href="${x.body}">${x.body}</em>` }
+  math(x) { return `<math>${x.body}</math>` }
+  link(x) { return `<a href="${x.href}" alt="${x.alt}">${x.text}</em>` }
+  // block
+  list(x) { return x.childs.join('\n') }
+  header(x) { return `<h${x.level}>${x.childs.join('')}</h${x.level}>` }
+  line(x) { return `${x.childs.join('')}` }
+  empty(x) { return `<p/>`.repeat(x.count-1) }
+  code(x) { return `<code class="${x.lang}"><pre>${x.body}\n</pre></code>`}
+  mark(x) { return `<blockquote>\n${x.childs.join('\n')}\n</blockquote>` }
+  tabBlock(x) { return `<pre>${x.childs.join('\n')}\n</pre>` }
+  image(x) { return `<img src="${x.href}" alt="${x.alt}">${rs(x.title)}</img>` }
+  hline(x) { return '<hr>' }
+  ref(x) { return '' }
+  paragraph(x) { return `<p>${x.childs.join('\n')}</p>` }
+  table(x) {
+    let len = x.childs.length, list=[]
+    for (let ri=0; ri<len; ri++) {
+      let row = x.childs[ri]
+      let rowHtml = ''
+      switch (ri) {
+        case 0: rowHtml = `<tr><th>${row.replace(/\|/g, '</th><th>')}</th></tr>`; break;
+        case 1: rowHtml = ''; break
+        default: rowHtml = `<tr><td>${row.replace(/\|/g, '</td><td>')}</td></tr>`; break;
+      }
+      list.push(rowHtml)
+    }
+    return `<table>\n${list.join('\n')}\n</table>`
+  }
+} 
+
+R.html = new Html()
+
+R.htmlRender = function (node) {
+  // console.log('node=%j', node)
+  if (node.type == null) return node
+  return R.html[node.type](node)
+}
+
+
+
+/*
 R.htmlRender = function (node) {
   let {type, body, childs} = node, len, list
   switch (type) {
@@ -79,3 +130,4 @@ R.htmlRender = function (node) {
       throw Error('generator: error node='+node)
   }
 }
+*/

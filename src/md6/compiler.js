@@ -35,7 +35,7 @@ M.parse = function (text) {
 
 // MD = (BLOCK)*
 let MD = function () {
-  let r = {type:'top', childs:[]}
+  let r = {type:'list', childs:[]}
   while (lineIdx < lineTop) {
     let e = BLOCK()
     r.childs = r.childs.concat(e)
@@ -60,7 +60,7 @@ let genLine = function (line) {
 }
 
 let inline = function (text) {
-  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$(?<math>.*?)\$)|(<(?<url>.*?)>)|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<title>.*?)")?\)))/g
+  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$(?<math>.*?)\$)|(<(?<url>.*?)>)|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>.*?)")?\)))/g
   var m, lastIdx = 0, len = text.length
   var r = []
   while ((m = regexp.exec(text)) !== null) {
@@ -75,7 +75,7 @@ let inline = function (text) {
       }
     }
     if (obj.link != null)
-      obj = {type:'link', text:obj.text, href:obj.href, title:obj.title}
+      obj = {type:'link', text:obj.text, href:obj.href, alt:obj.alt||''}
     else 
       obj = {type, body}
     // console.log('obj=%j', obj)
@@ -126,8 +126,12 @@ let lineUntil = function (regexp, options={}) {
 // EMPTY = \s*
 let EMPTY = function () {
   if (line().trim().length !== 0) return null
-  lineIdx ++
-  return {type:'empty'}
+  let emptyCount = 1
+  for (lineIdx++; lineIdx < lineTop; lineIdx++) {
+    if (line().trim().length != 0) break
+    emptyCount ++
+  }
+  return {type:'empty', count: emptyCount}
 }
 
 // CODE = ```\n.*\n```
@@ -233,36 +237,6 @@ let TABLE = function () {
 let LIST = function () {
   throw Error('LIST() not implemented!')
 }
-
-/*
-// LINE = \n(#*)? INLINE*
-let HEADER = function () {
-  let line1 = line(), start=i=0
-  let m = lineMatch(/^(#*)/)
-  if (m == null) return null
-  let level = m[0].length
-  let childs = inline(line().substring(level))
-  return gen(r, {type:'head', level, childs})
-}
-*/
-/*
-let PARAGRAPH = function () {
-  while (i<len && !/^\n((```)|(>)|(    )|($$)|(#)|(\n))/.test(md.substring(i, i+10))) {
-    childs.push(LINE())
-  }
-}
-*/
-/*
-
-  } else { // PARAGRAPH
-    while (i<len && !/^\n((```)|(>)|(    )|($$)|(#)|(\n))/.test(md.substring(i, i+10))) {
-      childs.push(LINE())
-    }
-    return gen({type:'paragraph', childs})
-  }
-}
-*/
-
 
 /*
 let LIST = function () {

@@ -83,18 +83,17 @@ aaa *bbb* __ccc__ \`ddd\`
 `
 
 describe('mdParser test', function() {
+  /*
   it('parse', function() {
     let tree = md6.parse(md)
     console.log('tree=%s', JSON.stringify(tree, null, 2))
-    // expect(tree).pass((x)=>x!=null)
-    // console.log('%s', JSON.stringify(tree, null, 2))
-  })
-  /*
-  it('htmlRender', function() {
-    // let html = C.toHtml(md)
-    let html = md6.toHtml(md2)
-    console.log('html=%s', html)
-    expect(html).to.contain('<i>bbb</i>')
   })
   */
+  it('htmlRender', function() {
+    // let html = C.toHtml(md)
+    let html = md6.toHtml(md)
+    console.log('html=%s', html)
+    // expect(html).to.contain('<i>bbb</i>')
+  })
+  
 })
