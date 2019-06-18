@@ -19,10 +19,10 @@ MATH  = \n$$(..*)\n$$
 */
 const M = module.exports = require('./generator')
 
-var lines, lineIdx
+var lines, lineIdx, lineTop, paragraph
 
 M.compile = function (md, generator) {
-  lines = md.split('\n')
+  lines = (md).split('\n'); lineTop = lines.length; lineIdx = 0; paragraph={ type:'paragraph', childs:[] }
   gen = generator
   // len = md.length; i = 0; ahead = null; aheadStart = -1
   let tree = MD()
@@ -36,9 +36,9 @@ M.parse = function (text) {
 // MD = (BLOCK)*
 let MD = function () {
   let r = {type:'top', childs:[]}
-  while (i < len) {
+  while (lineIdx < lineTop) {
     let e = BLOCK()
-    r.childs.push(e)
+    r.childs = r.childs.concat(e)
   }
   return gen(r)
 }
@@ -51,130 +51,209 @@ let head = function (str) {
   return (line().startsWith(str))
 }
 
-let headMatch = function (regexp) {
+let lineMatch = function (regexp) {
   return line().match(regexp)
 }
 
-
-let INLINE = function () {
-  let m = null
-  if (isNext('``')) {
-    return IPART('``', '``')
-  } else if (isNext('`')) {
-    return IPART('`', '`')
-  } else if (isNext('<')) {
-    return IPART('<', '>')
-  } else if (isNext('**')) {
-    return IPART('**', '**')
-  } else if (isNext('*')) {
-    return IPART('*', '*')
-  } else if (isNext('__')) {
-    return IPART('__', '__')
-  } else if (isNext('_')) {
-    return IPART('_', '_')
-  } else if (isNext('$')) {
-    return IPART('$', '$')
-  } else if ((r = LINK())!=null) {
-    return r
-  } else {
-    return STRING()
-  }
+let genLine = function (line) {
+  return gen({type:'line', childs: inline(line)})
 }
-// LINE = \n(#*)? INLINE*
-let LINE = function () {
-  let line1 = line(), start=i=0
-  let regexp = /(#*)((``.*?``>)|(`.*?>)|(\*\*.*?\*\*)|(\*.*?\*)|(__.*?__)|(_.*?_)|($.*?$)|(<.*?>)|(\[.*?\]\(.*?\))|([^`*_$]*))/g
-  while ((m = regexp.exec(line1)) !== null) {
-    console.log(`Found ${m[0]}. Next starts at ${regexp.lastIndex}.`);
+
+let inline = function (text) {
+  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$(?<math>.*?)\$)|(<(?<url>.*?)>)|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<title>.*?)")?\)))/g
+  var m, lastIdx = 0, len = text.length
+  var r = []
+  while ((m = regexp.exec(text)) !== null) {
+    if (m.index > lastIdx) r.push(gen({type:'text', body:text.substring(lastIdx, m.index)}))
+    let obj = {}, type, body
+    for (let key in m.groups) {
+      let value = m.groups[key]
+      if (value != null) {
+        obj[key] = value
+        type = key
+        body = value
+      }
+    }
+    if (obj.link != null)
+      obj = {type:'link', text:obj.text, href:obj.href, title:obj.title}
+    else 
+      obj = {type, body}
+    // console.log('obj=%j', obj)
+    r.push(gen(obj))
+    lastIdx = regexp.lastIndex
   }
-  let r = {type:'line', childs:[]}
-  return gen(r)
+  if (len > lastIdx) r.push(gen({type:'text', body:text.substring(lastIdx, len)}))
+  return r
 }
 
 // BLOCK = CODE | MARK | TABBLOCK | TABLE? | MATH? | TITLE | PARAGRAPH
 let BLOCK = function () {
-  var r = null
+  var r = null // ,blockStart = lineIdx
+  if (r == null) r = EMPTY()
   if (r == null) r = CODE()
   if (r == null) r = MARK()
-  if (r == null) r = CODE()
   if (r == null) r = TABBLOCK()
   if (r == null) r = MATH()
   if (r == null) r = IMAGE()
+  if (r == null) r = REF()
   if (r == null) r = HEADER()
   if (r == null) r = HLINE()
-  if (r == null) r = REF()
   if (r == null) r = TABLE()
-  if (r == null) r = PARAGRAPH()
-  throw Error('BLOCK: unknown type at line' + (lineIdx+1) +':' + md.substr(i, 20))
+  if (r == null) {
+    // console.log('lines[%d]=%j', lineIdx, line())
+    paragraph.childs.push(genLine(lines[lineIdx++]))
+    return []
+  } else { // 有比對到某種 BLOCK
+    let list = []
+    if (paragraph.childs.length > 0) list.push(gen(paragraph))
+    list.push(gen(r))
+    paragraph = {type:'paragraph', childs:[]}
+    return list
+  }
+}
+
+let lineUntil = function (regexp, options={}) {
+  let list = []
+  for (lineIdx++; lineIdx < lineTop; lineIdx++) {
+    line1 = line()
+    if (lineMatch(regexp)) break
+    if (options.compile) line1 = inline(line1)
+    list.push(line1)
+  }
+  return list
+}
+
+// EMPTY = \s*
+let EMPTY = function () {
+  if (line().trim().length !== 0) return null
+  lineIdx ++
+  return {type:'empty'}
+}
+
+// CODE = ```\n.*\n```
+let CODE = function () {
+  let line1 = line()
+  if (!line1.startsWith('```')) return null
+  let lang = line1.match(/^```(\S*)/)[1]
+  let childs = lineUntil(/^```/)
+  lineIdx ++
+  return gen({type:'code', lang, body:childs.join('\n')})
+}
+
+// MARK = (\n>.*)+
+let MARK = function () {
+  if (!line().startsWith('>')) return null
+  let childs = []
+  for (lineIdx++; lineIdx < lineTop; lineIdx++) {
+    line1 = line()
+    if (!line().startsWith('>')) break
+    childs.push(genLine(line1.substr(1)))
+  }
+  return gen({type:'mark', childs})
+}
+
+// TABBLOCK = (\n(TAB).*)+
+let TABBLOCK = function () {
+  if (!line().startsWith('    ')) return null
+  let childs = []
+  for (lineIdx++; lineIdx < lineTop; lineIdx++) {
+    line1 = line()
+    if (!line().startsWith('    ')) break
+    childs.push(genLine(line1.substr(4)))
+  }
+  return gen({type:'tabBlock', childs})
+}
+
+// MATH = \n$$(\w+)\n(..*)\n$$
+let MATH = function () {
+  if (!line().startsWith('$$')) return null
+  let childs = lineUntil(/^\$\$/)
+  lineIdx ++
+  return gen({type:'math', body:childs.join('\n')})
+}
+
+// IMAGE = \n![.*](.*)
+let IMAGE = function () {
+  let m = lineMatch(/^!\[(.*?)\]\((.*?)(\s*"(.*?)")?\)\s*$/)
+  if (m == null) return null
+  lineIdx++
+  return gen({type:'image', alt:m[1], href:m[2], title:m[4]})
+}
+
+// [id]: url/to/image  "Optional title attribute"
+// REF = \n[.*]:
+let REF = function () {
+  let m = lineMatch(/^\[([^\]]*?)\]: (.*?)(\s*"(.*?)")?$/)
+  if (m == null) return null
+  lineIdx++
+  return gen({type:'ref', id:m[1], href:m[2], title:m[4]})
+}
+
+let HEADER = function () {
+  let line1 = lines[lineIdx], line2 = lines[lineIdx+1]
+  // console.log('line1=%j', line1)
+  let m = line1.match(/^(#+)(.*)?$/) // # ....
+  // console.log('m=%j', m)
+  if (m != null) {
+    let r = {type:'header', level:m[1].length, childs:inline(m[2])}
+    // console.log('HEADER: r=%j', r)
+    lineIdx++
+    return gen(r)
+  }
+  if (line2 == null) return null
+  m = line2.match(/^((===+)|(---+))$/)
+  if (m == null) return null
+  lineIdx += 2
+  let level = (m[1] === '=') ? 1 : 2
+  return gen({type:'header', level, childs:inline(line1)})
 }
 
 let HLINE = function () {
-  if (headMatch('\n---', /^\-*?$/) || headMatch('\n***', /^\**?$/)) {
-    return gen({type: 'hline'})
+  let m = lineMatch(/^((---+)|(\*\*\*+))$/)
+  if (m == null) return null
+  lineIdx++
+  return gen({type:'hline', level:m[1].length, body:m[2]})
+}
+
+let TABLE = function () {
+  let line1 = lines[lineIdx]
+  if (line1.indexOf('|') < 0) return null
+  let line2 = lines[lineIdx+1]
+  m = line2.match(/^(\-*?\|)+\-*?$/)
+  if (m == null) return null
+  let childs = [ genLine(line1), genLine(line2) ]
+  for (lineIdx+=2; lineIdx < lineTop; lineIdx++) {
+    let tline = line()
+    if (tline.indexOf('|')<0) break
+    childs.push(genLine(tline))
   }
-  return null
+  return gen({type:'table', childs})
 }
 
-let LINK = function () {
-  let m = headMatch('[', /^([^\]]*?)\]\(([^\)"]*?)(".*?")?\)/)
-  if (m == null) return
-  return gen({type:'link', text:m[1], link:m[2], title:m[3]})
+let LIST = function () {
+  throw Error('LIST() not implemented!')
 }
 
-let STRING = function () {
-  let start = i
-  while ('`*$[<_\n'.indexOf(md.charAt(i)) < 0) {
-    i++
-  }
-  return gen({type:'string', head:'', body:md.substring(start, i), tail:''})
+/*
+// LINE = \n(#*)? INLINE*
+let HEADER = function () {
+  let line1 = line(), start=i=0
+  let m = lineMatch(/^(#*)/)
+  if (m == null) return null
+  let level = m[0].length
+  let childs = inline(line().substring(level))
+  return gen(r, {type:'head', level, childs})
 }
-
-let IPART = function (head, tail, mode='inline') {
-  if (isNext(head)) {
-    let llen = head.length, rlen = tail.length
-    let start = i + llen
-    i = start
-    for (; i<len; i++) {
-      if (md.substr(i, rlen) === tail) {
-        let r = {type:head, head, body:md.substring(start, i), tail}
-        i += rlen
-        return (mode === 'inline') ? gen(r) : r
-      }
-      if ((mode=='inline' && md.charAt(i) === '\n') || i >= len) {
-        console.log('md=%s', md)
-        console.log('head=%j md.substr(i,10)=%j', head, md.substr(i, 10))
-        throw Error('IPART('+head+') error, end of line encounter !')
-      }
-    }
-  }
-}
-
-let OTHERS = function () {
-  let line1 = nextLine(i+1)
-  if (line1.match(/^\s*$/)) return LINE()
-  let line2 = nextLine(i+line1.length+2) // \nline1\nline2
-  let nexti = i + line1.length + line2.length + 2
-  let childs = []
-  // console.log('line1=%j line2=%j', line1, line2)
-  if (/^\[[^\]]*?\]:/.test(line1)) { // REF [id]: path/to/file "title"
-    return REF()
-  } else if (/^===+$/.test(line2) || /^---+$/.test(line2)) { // h1:xxx\n=====, h2:xxx\n------
-    let type = (line2[0] === '=') ? 'h1' : 'h2'
+*/
+/*
+let PARAGRAPH = function () {
+  while (i<len && !/^\n((```)|(>)|(    )|($$)|(#)|(\n))/.test(md.substring(i, i+10))) {
     childs.push(LINE())
-    i = nexti
-    return gen({type, head: '', childs, tail:line2})
-  } else if (/^(\-*?\|)+\-*?$/.test(line2)) { // TABLE
-    while (true) {
-      let start = i
-      let line = LINE()
-      if (md.substring(start, i).indexOf('|') < 0) {
-        i = start
-        break
-      } else {
-        childs.push(line)
-      }
-    }
-    return gen({type:'table', childs})
+  }
+}
+*/
+/*
+
   } else { // PARAGRAPH
     while (i<len && !/^\n((```)|(>)|(    )|($$)|(#)|(\n))/.test(md.substring(i, i+10))) {
       childs.push(LINE())
@@ -182,72 +261,8 @@ let OTHERS = function () {
     return gen({type:'paragraph', childs})
   }
 }
+*/
 
-// CODE = \n```(\w+)\n(..*)\n```
-let CODE = function () {
-  let r = IPART('\n```', '\n```', 'block')
-  let m = r.body.match(/^(.*?)\n([\s\S]*)$/)
-  r.type = 'code'
-  r.lang = m[1]
-  r.body = m[2]
-  return gen(r)
-}
-
-// MATH = \n$$(\w+)\n(..*)\n$$
-let MATH = function () {
-  let r = IPART('\n$$', '\n$$', 'block')
-  r.type = 'math'
-  return gen(r)
-}
-
-// MARK = (\n>.*)+
-let MARK = function () {
-  // console.log('MARK()')
-  let childs = []
-  while (isNext('\n>')) {
-    i+=2
-    childs.push(LINE({newLine:false}))
-  }
-  return gen({type:'mark', childs})
-}
-
-// TABBLOCK = (\n(TAB).*)+
-let TABBLOCK = function () {
-  let childs = []
-  while (isNext('\n    ')) {
-    let start = ++i
-    while (md[i] != '\n') {
-      i++
-    }
-    childs.push(md.substring(start+4, i))
-  }
-  return gen({type:'tabBlock', childs})
-}
-
-// IMAGE = \n![.*](.*)
-let IMAGE = function () {
-  let r = IPART('\n![', ')', 'block')
-  let m = r.body.match(/^(.*?)\]\((.*?)(\s*"(.*?)")?$/)
-  r.type = 'image'
-  r.alt = m[1]
-  r.href = m[2]
-  r.title = m[4]
-  return gen(r)
-}
-
-// [id]: url/to/image  "Optional title attribute"
-// REF = \n[.*]:
-let REF = function () {
-  let r = IPART('\n[', '\n', 'block')
-  i-- // 退回 \n
-  console.log('REF: r.body=%j', r.body)
-  let m = r.body.match(/^([^\]]*?)\]: (.*?)(\s*"(.*?)")?$/)
-  r.type = 'ref'
-  r.id = m[1]
-  r.href = m[2]
-  r.title = m[4]
-  return gen(r)
-}
 
 /*
 let LIST = function () {

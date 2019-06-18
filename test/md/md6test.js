@@ -76,21 +76,25 @@ ttt \`fff\` ..
 
 `
 
-let md2 = `[id]: path/to/file "title"
+let md2 = `# title
+## section
 
+aaa *bbb* __ccc__ \`ddd\`
 `
 
 describe('mdParser test', function() {
   it('parse', function() {
-    // let tree = C.parse(md)
-    // console.log('tree=%s', JSON.stringify(tree, null, 2))
+    let tree = md6.parse(md)
+    console.log('tree=%s', JSON.stringify(tree, null, 2))
     // expect(tree).pass((x)=>x!=null)
     // console.log('%s', JSON.stringify(tree, null, 2))
   })
+  /*
   it('htmlRender', function() {
     // let html = C.toHtml(md)
-    let html = md6.toHtml(md)
+    let html = md6.toHtml(md2)
     console.log('html=%s', html)
     expect(html).to.contain('<i>bbb</i>')
   })
+  */
 })

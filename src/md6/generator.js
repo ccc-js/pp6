@@ -1,6 +1,7 @@
 const R = module.exports = {}
 
 R.treeGenerator = function (node) {
+  // console.log('node=%j', node)
   return node
 }
 
@@ -35,6 +36,7 @@ R.htmlRender = function (node) {
     case '[': return rs(body)
     case '(': return body
     case '<': return `<a href="${body}">${rs(body)}</a>`
+    case 'empty': return ''
     case 'hline': return '<hr>'
     case 'link': return `<a href="${node.link}" title="${node.title}">${rs(node.text)}</a>`
     case 'code': return `<code class="${node.lang}"><pre>${body}\n</pre></code>`
