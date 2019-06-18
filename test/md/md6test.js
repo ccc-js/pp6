@@ -73,6 +73,10 @@ ttt \`fff\` ..
 > ... &... <https://tw.youtube.com> ...
 > ... &amp; ...
 
+1. aaa
+2. bbb
+* ccc
+* ddd
 
 `
 
@@ -80,6 +84,7 @@ let md2 = `# title
 ## section
 
 aaa *bbb* __ccc__ \`ddd\`
+
 `
 
 describe('mdParser test', function() {
@@ -90,7 +95,6 @@ describe('mdParser test', function() {
   })
   */
   it('htmlRender', function() {
-    // let html = C.toHtml(md)
     let html = md6.toHtml(md)
     console.log('html=%s', html)
     // expect(html).to.contain('<i>bbb</i>')

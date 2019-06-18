@@ -35,9 +35,10 @@ M.parse = function (text) {
 
 // MD = (BLOCK)*
 let MD = function () {
-  let r = {type:'list', childs:[]}
+  let r = {type:'blocks', childs:[]}
   while (lineIdx < lineTop) {
     let e = BLOCK()
+    // console.log('e=%j', e)
     r.childs = r.childs.concat(e)
   }
   return gen(r)
@@ -98,6 +99,7 @@ let BLOCK = function () {
   if (r == null) r = REF()
   if (r == null) r = HEADER()
   if (r == null) r = HLINE()
+  if (r == null) r = LIST()
   if (r == null) r = TABLE()
   if (r == null) {
     // console.log('lines[%d]=%j', lineIdx, line())
@@ -160,7 +162,7 @@ let MARK = function () {
 let TABBLOCK = function () {
   if (!line().startsWith('    ')) return null
   let childs = []
-  for (lineIdx++; lineIdx < lineTop; lineIdx++) {
+  for (; lineIdx < lineTop; lineIdx++) {
     line1 = line()
     if (!line().startsWith('    ')) break
     childs.push(genLine(line1.substr(4)))
@@ -235,14 +237,17 @@ let TABLE = function () {
 }
 
 let LIST = function () {
-  throw Error('LIST() not implemented!')
-}
-
-/*
-let LIST = function () {
-  if (headMatch('\n', /^\*\s/) || headMatch('\n', /^(\d+)\./)) {
-    return gen({type: 'hline'})
+  let m = lineMatch(/^((\*)|(\d+\.))\s/)
+  if (m == null) return null
+  let childs = []
+  let listType = (m[1][0]==='*') ? 'ul' : 'ol'
+  for (; lineIdx < lineTop; lineIdx++) {
+    let tline = line()
+    m = tline.match(/^((\*)|(\d+\.))\s(.*)$/)
+    if (m == null) break
+    let tType = (m[1][0]==='*') ? 'ul' : 'ol'
+    if (tType !== listType) break
+    childs.push(gen({type:'li', childs: inline(m[4])}))
   }
-  return null
+  return gen({type:'list', listType, childs})
 }
-*/

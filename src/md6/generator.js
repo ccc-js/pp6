@@ -36,17 +36,19 @@ class Html {
   math(x) { return `<math>${x.body}</math>` }
   link(x) { return `<a href="${x.href}" alt="${x.alt}">${x.text}</em>` }
   // block
-  list(x) { return x.childs.join('\n') }
+  blocks(x) { return x.childs.join('\n') }
   header(x) { return `<h${x.level}>${x.childs.join('')}</h${x.level}>` }
   line(x) { return `${x.childs.join('')}` }
-  empty(x) { return `<p/>`.repeat(x.count-1) }
-  code(x) { return `<code class="${x.lang}"><pre>${x.body}\n</pre></code>`}
+  empty(x) { return `<p></p>\n`.repeat(x.count-1) }
+  code(x) { return `<code class="${x.lang}"><pre>\n${x.body}\n</pre></code>`}
   mark(x) { return `<blockquote>\n${x.childs.join('\n')}\n</blockquote>` }
-  tabBlock(x) { return `<pre>${x.childs.join('\n')}\n</pre>` }
+  tabBlock(x) { return `<pre>\n${x.childs.join('\n')}\n</pre>` }
   image(x) { return `<img src="${x.href}" alt="${x.alt}">${rs(x.title)}</img>` }
   hline(x) { return '<hr>' }
   ref(x) { return '' }
   paragraph(x) { return `<p>${x.childs.join('\n')}</p>` }
+  list(x) { return `<${x.listType}>\n${x.childs.join('\n')}\n</${x.listType}>`}
+  li(x) { return `<li>${x.childs.join('')}</li>` }
   table(x) {
     let len = x.childs.length, list=[]
     for (let ri=0; ri<len; ri++) {
