@@ -19,25 +19,12 @@ MATH  = \n$$(..*)\n$$
 */
 const M = module.exports = require('./generator')
 
-var md, len, i, ahead, aheadStart, gen
+var lines, lineIdx
 
-let nextLine = function (start) {
-  var j
-  for (j=start; j<len; j++) {
-    if (md.charAt(j)=='\n') break
-  }
-  return md.substring(start, j)
-}
-
-let isNext = function (h) {
-  if (aheadStart != i) ahead = md.substr(i, 10)
-  return (ahead.startsWith(h))
-}
-
-M.compile = function (text, generator) {
-  md = '\n'+text.replace(/\t/g, '    ')+'\n'
+M.compile = function (md, generator) {
+  lines = md.split('\n')
   gen = generator
-  len = md.length; i = 0; ahead = null; aheadStart = -1
+  // len = md.length; i = 0; ahead = null; aheadStart = -1
   let tree = MD()
   return tree
 }
@@ -56,77 +43,18 @@ let MD = function () {
   return gen(r)
 }
 
-// BLOCK = CODE | MARK | TABBLOCK | TABLE? | MATH? | TITLE | PARAGRAPH
-let BLOCK = function () {
-  // console.log('block=%j', md.substr(i, 10))
-  var r = null
-  if (isNext('\n```')) {
-    return CODE()
-  } else if (isNext('\n>')) {
-    // console.log('isNext(\n>')
-    return MARK()
-  } else if (isNext('\n    ')) {
-    return TABBLOCK()
-  } else if (isNext('\n$$')) {
-    return MATH()
-  } else if (isNext('\n![')) {
-    return IMAGE()
-  } else if (isNext('\n#')) { // #.. section
-    return LINE()
-  } else if (r = HLINE()) {
-    return r
-  } else if (isNext('\n')) { // TABLE or PARAGRAPH
-    return OTHERS()
-  } else {
-    throw Error('BLOCK: unknown type at '+i+':'+md.substr(i, 20))
-  }
+let line = function () {
+  return lines[lineIdx]
 }
 
-let HLINE = function () {
-  if (headMatch('\n---', /^\-*?$/) || headMatch('\n***', /^\**?$/)) {
-    return gen({type: 'hline'})
-  }
-  return null
+let head = function (str) {
+  return (line().startsWith(str))
 }
 
-let LIST = function () {
-  if (headMatch('\n', /^\*\s/) || headMatch('\n', /^(\d+)\./)) {
-    return gen({type: 'hline'})
-  }
-  return null
+let headMatch = function (regexp) {
+  return line().match(regexp)
 }
 
-// LINE = \n(#*)? INLINE*
-let LINE = function (options = {}) {
-  let r = {type:'line', childs:[]}
-  if (md[i]=='\n') i++; else if (options.newLine!==false) throw Error('LINE: not start with \n')
-  let start = i
-  while (md[i] == '#') i++
-  let h = gen({type:'', head:'\n', body:md.substring(start, i), tail:''})
-  r.childs.push(h)
-  while (md[i] != '\n' && i < len) {
-    let c = INLINE()
-    r.childs.push(c)
-  }
-  return gen(r)
-}
-
-// INLINE = ITALIC | BOLD | ICODE | IMATH?
-// ICODE = `(.*)`
-// ITALIC = *(.*)*
-// BOLD = **(.*)**
-// LINK = [.*](.*)
-// IMATH = $(.*)$
-
-let headMatch = function (head, regexp) {
-  if (isNext(head)) {
-    let line = nextLine(i+head.length)
-    let m = line.match(regexp)
-    i += head.length + m[0].length
-    return m
-  }
-  return null
-}
 
 let INLINE = function () {
   let m = null
@@ -151,6 +79,40 @@ let INLINE = function () {
   } else {
     return STRING()
   }
+}
+// LINE = \n(#*)? INLINE*
+let LINE = function () {
+  let line1 = line(), start=i=0
+  let regexp = /(#*)((``.*?``>)|(`.*?>)|(\*\*.*?\*\*)|(\*.*?\*)|(__.*?__)|(_.*?_)|($.*?$)|(<.*?>)|(\[.*?\]\(.*?\))|([^`*_$]*))/g
+  while ((m = regexp.exec(line1)) !== null) {
+    console.log(`Found ${m[0]}. Next starts at ${regexp.lastIndex}.`);
+  }
+  let r = {type:'line', childs:[]}
+  return gen(r)
+}
+
+// BLOCK = CODE | MARK | TABBLOCK | TABLE? | MATH? | TITLE | PARAGRAPH
+let BLOCK = function () {
+  var r = null
+  if (r == null) r = CODE()
+  if (r == null) r = MARK()
+  if (r == null) r = CODE()
+  if (r == null) r = TABBLOCK()
+  if (r == null) r = MATH()
+  if (r == null) r = IMAGE()
+  if (r == null) r = HEADER()
+  if (r == null) r = HLINE()
+  if (r == null) r = REF()
+  if (r == null) r = TABLE()
+  if (r == null) r = PARAGRAPH()
+  throw Error('BLOCK: unknown type at line' + (lineIdx+1) +':' + md.substr(i, 20))
+}
+
+let HLINE = function () {
+  if (headMatch('\n---', /^\-*?$/) || headMatch('\n***', /^\**?$/)) {
+    return gen({type: 'hline'})
+  }
+  return null
 }
 
 let LINK = function () {
@@ -288,36 +250,10 @@ let REF = function () {
 }
 
 /*
-let PARAGRAPH = function () {
-  let childs = []
-  while (!/^\n((```)|(>)|(    )|($$)|(#)|(\n))/.test(md.substr(i, 10)) && !isTable()) {
-    childs.push(LINE())
+let LIST = function () {
+  if (headMatch('\n', /^\*\s/) || headMatch('\n', /^(\d+)\./)) {
+    return gen({type: 'hline'})
   }
-  if (childs.length == 0) childs.push(LINE())
-  return gen({type:'paragraph', childs})
-}
-
-let isTable = function () {
-  return /^\n.*?\|.*?\n(\-+|)+\-+/.test(md.substring(i, 1000))
-}
-
-let TABLE = function () {
-  let childs = []
-  while (true) {
-    let start = i
-    let line = LINE()
-    if (md.substring(start, i).indexOf('|') < 0) {
-      i = start
-      break
-    } else {
-      childs.push(line)
-    }
-  }
-  return gen({type:'table', childs})
-}
-*/
-/*
-let next = function () {
-  return md.charAt(i++)
+  return null
 }
 */
