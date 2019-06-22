@@ -62,16 +62,10 @@ M.toHtml = function (md, plugin={}) {
   <html>
   <head>
   <meta charset="UTF-8">
-  <!-- highlight.js -->
   <script src="${root}/highlight.min.js"></script>
-  <!-- katex -->
-  <script src="${root}/katex.min.js"></script>
   <link rel="stylesheet" href="${root}/atom-one-light.min.css">
-  <link rel="stylesheet" href="${root}/katex.min.css">
-  <!-- <link rel="stylesheet" href="${root}/vs.min.css"/> -->
-  <!-- main -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.css">
   <link rel="stylesheet" type="text/css" href="${root}/main.css">
-  <script src="${root}/main.js"></script>
   </head>
   <body>
   <title>${title}</title>
@@ -98,7 +92,8 @@ M.toHtml = function (md, plugin={}) {
   </article>
   <footer>${M.mdToHtml(footer)}</footer>
   <script src="${root}/highlight.min.js"></script>
-  <script src="${root}/main.js">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.js"></script>
+  <script src="${root}/main.js"></script>
   </script>
   </body>
   </html>
