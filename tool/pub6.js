@@ -62,7 +62,6 @@ M.toHtml = function (md, plugin={}) {
   <html>
   <head>
   <meta charset="UTF-8">
-  <script src="${root}/highlight.min.js"></script>
   <link rel="stylesheet" href="${root}/atom-one-light.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.css">
   <link rel="stylesheet" type="text/css" href="${root}/main.css">
