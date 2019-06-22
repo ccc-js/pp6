@@ -66,18 +66,11 @@ M.toHtml = function (md, plugin={}) {
   <link rel="stylesheet" type="text/css" href="${root}/main.css">
   <!-- highlight.js -->
   <script src="${root}/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
   <!-- katex -->
   <script src="${root}/katex.min.js"></script>
   <link rel="stylesheet" href="${root}/atom-one-light.min.css">
   <link rel="stylesheet" href="${root}/katex.min.css">
   <!-- <link rel="stylesheet" href="${root}/vs.min.css"/> -->
-  <script>document.addEventListener("DOMContentLoaded", function () {
-    var mathElements = document.getElementsByClassName("math");
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") { katex.render(texText.data, mathElements[i], { displayMode: mathElements[i].classList.contains("display"), throwOnError: false } );
-    }}});</script>
   </head>
   <body>
   <title>${title}</title>
