@@ -2,14 +2,22 @@
   <html>
   <head>
   <meta charset="UTF-8">
-  <!-- <base href="https://ccc-js.github.io/pub6/doc/"> -->
-  <link rel="stylesheet" type="text/css" href="https://ccc-js.github.io/pub6/doc/main.css">
-  <link rel="stylesheet" href="https://ccc-js.github.io/pub6/doc/atom-one-light.min.css">
-  <link rel="stylesheet" href="https://ccc-js.github.io/pub6/doc/katex.min.css">
+  <!-- <base href="https://ccc-js.github.io/pp6/doc/"> -->
+  <link rel="stylesheet" type="text/css" href="https://ccc-js.github.io/pp6/doc/main.css">
   <!-- highlight.js -->
-  <script src="https://ccc-js.github.io/pub6/doc/highlight.min.js"></script>
+  <script src="https://ccc-js.github.io/pp6/doc/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
-  <link rel="stylesheet" href="https://ccc-js.github.io/pub6/doc/vs.min.css"/>
+  <!-- katex -->
+  <script src="https://ccc-js.github.io/pp6/doc/katex.min.js"></script>
+  <link rel="stylesheet" href="https://ccc-js.github.io/pp6/doc/atom-one-light.min.css">
+  <link rel="stylesheet" href="https://ccc-js.github.io/pp6/doc/katex.min.css">
+  <!-- <link rel="stylesheet" href="https://ccc-js.github.io/pp6/doc/vs.min.css"/> -->
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    var mathElements = document.getElementsByClassName("math");
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") { katex.render(texText.data, mathElements[i], { displayMode: mathElements[i].classList.contains("display"), throwOnError: false } );
+    }}});</script>
   </head>
   <body>
   <title>開源科學期刊授權方式</title>
@@ -51,8 +59,8 @@
   </article>
   <footer><p>授權方式： 文章採用 <a href="https://creativecommons.org/licenses/by-nd/4.0/" alt="">CC-BY-ND</a> 授權，程式採用 <a href="https://opensource.org/licenses/MIT" alt="">MIT</a> 授權，原因請看 <a href="license.html" alt="">授權說明</a></p>
 </footer>
-  <script src="https://ccc-js.github.io/pub6/doc/highlight.min.js"></script>
-  <script src="https://ccc-js.github.io/pub6/doc/main.js">
+  <script src="https://ccc-js.github.io/pp6/doc/highlight.min.js"></script>
+  <script src="https://ccc-js.github.io/pp6/doc/main.js">
   </script>
   </body>
   </html>
