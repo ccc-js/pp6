@@ -22,7 +22,7 @@ const M = module.exports = require('./generator')
 var lines, lineIdx, lineTop, paragraph
 
 M.compile = function (md, generator) {
-  lines = (md).split('\n'); lineTop = lines.length; lineIdx = 0; paragraph={ type:'paragraph', childs:[] }
+  lines = md.replace(/\r/g, '').replace(/\t/g, '    ').split('\n'); lineTop = lines.length; lineIdx = 0; paragraph={ type:'paragraph', childs:[] }
   gen = generator
   // len = md.length; i = 0; ahead = null; aheadStart = -1
   let tree = MD()
@@ -48,20 +48,12 @@ let line = function () {
   return lines[lineIdx]
 }
 
-let head = function (str) {
-  return (line().startsWith(str))
-}
-
-let lineMatch = function (regexp) {
-  return line().match(regexp)
-}
-
 let genLine = function (line) {
   return gen({type:'line', childs: inline(line)})
 }
 
 let inline = function (text) {
-  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$(?<math>.*?)\$)|(<(?<url>.*?)>)|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>.*?)")?\)))/g
+  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$(?<math1>.*?)\$)|(<(?<url>.*?)>)|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>[^\"\]]?)")?\)))/g
   var m, lastIdx = 0, len = text.length
   var r = []
   while ((m = regexp.exec(text)) !== null) {
@@ -118,7 +110,7 @@ let lineUntil = function (regexp, options={}) {
   let list = []
   for (lineIdx++; lineIdx < lineTop; lineIdx++) {
     line1 = line()
-    if (lineMatch(regexp)) break
+    if (line().match(regexp)) break
     if (options.compile) line1 = inline(line1)
     list.push(line1)
   }
@@ -180,7 +172,7 @@ let MATH = function () {
 
 // IMAGE = \n![.*](.*)
 let IMAGE = function () {
-  let m = lineMatch(/^!\[(.*?)\]\((.*?)(\s*"(.*?)")?\)\s*$/)
+  let m = line().match(/^!\[(.*?)\]\((.*?)(\s*"(.*?)")?\)\s*$/)
   if (m == null) return null
   lineIdx++
   return gen({type:'image', alt:m[1], href:m[2], title:m[4]})
@@ -189,7 +181,7 @@ let IMAGE = function () {
 // [id]: url/to/image  "Optional title attribute"
 // REF = \n[.*]:
 let REF = function () {
-  let m = lineMatch(/^\[([^\]]*?)\]: (.*?)(\s*"(.*?)")?$/)
+  let m = line().match(/^\[([^\]]*?)\]: (.*?)(\s*"(.*?)")?$/)
   if (m == null) return null
   lineIdx++
   return gen({type:'ref', id:m[1], href:m[2], title:m[4]})
@@ -215,7 +207,7 @@ let HEADER = function () {
 }
 
 let HLINE = function () {
-  let m = lineMatch(/^((---+)|(\*\*\*+))$/)
+  let m = line().match(/^((---+)|(\*\*\*+))$/)
   if (m == null) return null
   lineIdx++
   return gen({type:'hline', level:m[1].length, body:m[2]})
@@ -236,18 +228,39 @@ let TABLE = function () {
   return gen({type:'table', childs})
 }
 
-let LIST = function () {
-  let m = lineMatch(/^((\*)|(\d+\.))\s/)
+let LIST = function (level=0) {
+  let m = line().match(/^(\s*)((\*)|(\d+\.))\s/)
   if (m == null) return null
+  // console.log('LIST:level=%d m=%j', level, m.slice(1))
+  if (m[1].length < level*4) return null
   let childs = []
-  let listType = (m[1][0]==='*') ? 'ul' : 'ol'
+  let listType = (m[2][0]==='*') ? 'ul' : 'ol'
   for (; lineIdx < lineTop; lineIdx++) {
-    let tline = line()
-    m = tline.match(/^((\*)|(\d+\.))\s(.*)$/)
+    let tline = line(), tChilds = null
+    m = tline.match(/^(\s*)((\*)|(\d+\.))\s(.*)$/)
     if (m == null) break
-    let tType = (m[1][0]==='*') ? 'ul' : 'ol'
+    if (m[1].length >= (level+1)*4) {
+      tChilds = LIST(level+1)
+      childs.push(tChilds)
+      // console.log('tChilds=%j', tChilds)
+      m = line().match(/^(\s*)((\*)|(\d+\.))\s(.*)$/)
+      if (m == null) break
+    }
+    if (m[1].length < level * 4) break
+    let tType = (m[2][0]==='*') ? 'ul' : 'ol'
     if (tType !== listType) break
-    childs.push(gen({type:'li', childs: inline(m[4])}))
+    childs.push(gen({type:'li', level, childs: inline(m[5])}))
   }
-  return gen({type:'list', listType, childs})
+  // console.log('list: childs=%j', childs)
+  return gen({type:'list', level, listType, childs})
 }
+
+/*
+let head = function (str) {
+  return (line().startsWith(str))
+}
+
+let lineMatch = function (regexp) {
+  return line().match(regexp)
+}
+*/

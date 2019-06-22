@@ -4,18 +4,20 @@
 const argv = require('yargs').argv
 const fs6 = require('../src/fs6')
 const md6 = require('../src/md6')
+const mdit = require('./mdit')
 const path = require('path')
 const uu6 = require('js6/uu6')
 const JSOX = require('jsox')
 
 const M = module.exports = {}
 
-let options = {toHtml:true, toPdf:false}
+let options = {toHtml:true, toPdf:false} // , standalone:true
 
 M.mdToHtml = function (md) {
   if (md == null) return ''
   // return mdit.render(md)
-  return md6.toHtml(md)
+  // console.log('md=%j', md)
+  return md6.toHtml(md, options)
 }
 
 M.parse = function (md) { // 1   2        3                   4             5              6
@@ -29,6 +31,23 @@ M.parse = function (md) { // 1   2        3                   4             5   
   // console.log('m[6]=%j', m[6])
   let ref = JSOX.parse('{' + (m[6]||'') + '}')
   return {type, meta, body, ref}
+}
+
+M.bib2html = function (bib) {
+  let refs = []
+  let i = 1
+  for (let id in bib) {
+    let {title, url, year, author, booktitle} = bib[id]
+    refs.push(`
+<li>
+  <a id="${id}"></a>
+  ${author} , 
+  <em>"${url==null? title : '<a href="' + url + '">' + title + '</a>'}"</em>, 
+  ${booktitle ? booktitle+',' : ''}
+  ${year}
+</li>`)
+  }
+  return `\n<ol class="referene">\n${refs.join('\n')}\n</ol>`
 }
 
 M.toHtml = function (md, plugin={}) {
@@ -47,6 +66,10 @@ M.toHtml = function (md, plugin={}) {
   <link rel="stylesheet" type="text/css" href="${root}/main.css">
   <link rel="stylesheet" href="${root}/atom-one-light.min.css">
   <link rel="stylesheet" href="${root}/katex.min.css">
+  <!-- highlight.js -->
+  <script src="${root}/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <link rel="stylesheet" href="${root}/vs.min.css"/>
   </head>
   <body>
   <title>${title}</title>
@@ -117,7 +140,6 @@ M.htmlFileToPdf = async function (htmlFile, pdfFile, meta) {
   await browser.close()
 }
 
-
 M.convertFile = async function (mdFile, options, plugin={}) {
   let { dir, base, ext, name } = path.parse(mdFile)
   var toFile = null, toText = null
@@ -152,6 +174,7 @@ M.convertFile = async function (mdFile, options, plugin={}) {
 
 async function handler(type, dir, attach) {
   let {stack} = attach
+  console.log('  dir=%s', dir)
   switch (type) {
     case 'folder': 
       await folderVisit(dir, attach, handler)

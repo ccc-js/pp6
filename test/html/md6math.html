@@ -1,8 +1,3 @@
-const C = require('./compiler')
-const G = require('./generator')
-const M = module.exports = {}
-
-let htmlHeader = `
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
@@ -34,18 +29,20 @@ let htmlHeader = `
   <![endif]-->
 </head>
 <body>
-`
+<p></p>
 
-let htmlTail = `
+<p><span class="math display">
+\int_0^x f(x) dx
+</span></p>
+
+<p>embed : ... <span class="math inline">\int_0^x f(x) dx</span> ...</p>
+
+<pre><code class="js">
+function add(x,y) {
+  return x+y
+}
+</code></pre>
+<p></p>
+
 </body>
 </html>
-`
-
-M.toHtml = function (md, options={}) {
-  let html = C.compile(md, G.htmlRender)
-  return (options.standalone) ? `${htmlHeader}${html}${htmlTail}` : html
-}
-
-M.parse = function (md) {
-  return C.compile(md, G.treeGenerator)
-}

@@ -33,22 +33,23 @@ class Html {
   under2(x) { return `<em>${rs(x.body)}</em>` }
   under1(x) { return `<em>${rs(x.body)}</em>` }
   url(x) { return `<a href="${x.body}">${x.body}</em>` }
-  math(x) { return `<math>${x.body}</math>` }
-  link(x) { return `<a href="${x.href}" alt="${x.alt}">${x.text}</em>` }
+  math1(x) { return `<span class="math inline">${x.body}</span>` }
+  math(x) { return `<p><span class="math display">\n${x.body}\n</span></p>` }
+  link(x) { return `<a href="${x.href}" alt="${x.alt}">${x.text}</a>` }
   // block
   blocks(x) { return x.childs.join('\n') }
   header(x) { return `<h${x.level}>${x.childs.join('')}</h${x.level}>` }
   line(x) { return `${x.childs.join('')}` }
   empty(x) { return `<p></p>\n`.repeat(x.count-1) }
-  code(x) { return `<code class="${x.lang}"><pre>\n${x.body}\n</pre></code>`}
+  code(x) { return `<pre><code class="${x.lang}">\n${x.body}\n</code></pre>`}
   mark(x) { return `<blockquote>\n${x.childs.join('\n')}\n</blockquote>` }
   tabBlock(x) { return `<pre>\n${x.childs.join('\n')}\n</pre>` }
   image(x) { return `<img src="${x.href}" alt="${x.alt}">${rs(x.title)}</img>` }
   hline(x) { return '<hr>' }
   ref(x) { return '' }
   paragraph(x) { return `<p>${x.childs.join('\n')}</p>` }
-  list(x) { return `<${x.listType}>\n${x.childs.join('\n')}\n</${x.listType}>`}
-  li(x) { return `<li>${x.childs.join('')}</li>` }
+  list(x) { return `${'    '.repeat(x.level)}<${x.listType}>\n${x.childs.join('\n')}\n${'    '.repeat(x.level)}</${x.listType}>`}
+  li(x) { return `${'    '.repeat(x.level+1)}<li>${x.childs.join('')}</li>` }
   table(x) {
     let len = x.childs.length, list=[]
     for (let ri=0; ri<len; ri++) {
