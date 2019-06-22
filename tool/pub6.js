@@ -58,12 +58,10 @@ M.toHtml = function (md, plugin={}) {
   // console.log('plugin=%j', plugin)
   let {type, meta:fileMeta, body, ref} = r
   let {abstract, title, author} = uu6.defaults(fileMeta, {title:'', author:'', abstract:''})
-  html = `
+  html = `<!DOCTYPE html>
   <html>
   <head>
   <meta charset="UTF-8">
-  <!-- <base href="${root}/"> -->
-  <link rel="stylesheet" type="text/css" href="${root}/main.css">
   <!-- highlight.js -->
   <script src="${root}/highlight.min.js"></script>
   <!-- katex -->
@@ -71,6 +69,9 @@ M.toHtml = function (md, plugin={}) {
   <link rel="stylesheet" href="${root}/atom-one-light.min.css">
   <link rel="stylesheet" href="${root}/katex.min.css">
   <!-- <link rel="stylesheet" href="${root}/vs.min.css"/> -->
+  <!-- main -->
+  <link rel="stylesheet" type="text/css" href="${root}/main.css">
+  <script src="${root}/main.js"></script>
   </head>
   <body>
   <title>${title}</title>

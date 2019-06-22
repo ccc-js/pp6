@@ -15,7 +15,7 @@ see [misavo](http://misavo.com)
 
 如文獻 [1](#ccc2019), [2](#kour2014fast) 所說的，....
 
-![](img/picture.jpg)
+![](img/picture.png)
 
 ## Our Method
 
