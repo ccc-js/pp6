@@ -66,11 +66,17 @@ h1, h2, h3 {
   padding: 5px, 10px;
 }
 
-h1 { font-size: 160%; text-align: center; }
+h1 { font-size: 180%; text-align: center; }
 
-h2 { font-size: 140%; }
+h2 { font-size: 160%; }
 
-h3 { font-size: 120%; }
+h3 { font-size: 140%; }
+
+h4 { font-size: 120%; }
+
+h5 { font-size: 110%; }
+
+h6 { font-size: 100%; }
 
 figure, .subfigures {
   text-align: center;
@@ -137,9 +143,9 @@ header span {
   margin: 20px;
 }
 
-p, li {
+p, li, pre, code {
   line-height: 200%;
-  font-size: 16px;
+  /* font-size: 16px; */
 }
 
 img {
@@ -147,27 +153,20 @@ img {
   display: block;
 }
 
-div.sourceCode {
-  /* We first create a flex layout context */
-  display: flex;
-  /* Then we define the flow direction 
-      and if we allow the items to wrap 
-    * Remember this is the same as:
-    * flex-direction: row;
-    * flex-wrap: wrap;
-    */
-  flex-flow: row wrap;
-  /* Then we define how is distributed the remaining space */
-  justify-content: space-around;
-}
-
-.sourceCode pre {
+pre code {
   border: 1px solid #888888;
   line-height: 160%;
   padding: 15px;
   display: flex;
+  justify-content: space-around;
+  border-radius: 5px;
+  flex-flow: row wrap;
+  /*
+  font-size: 100%;
+  display: flex;
   justify-content: center;
-  font-size: 120%;
+
+  */
 }
 
 a {
@@ -198,8 +197,6 @@ footer * {
 
 /* ----------------------- paged media -------------------*/
 /* 參考 : https://www.w3.org/TR/CSS21/page.html */
-
-
 .printOnly {
   display: none;
 }
@@ -239,7 +236,7 @@ footer * {
     display: block;
   }
   /* 參考 -- https://www.w3.org/TR/css-page-3/
-  這個目前沒效 因為是 CSS-page-3
+  這個目前沒效 因為是 CSS-page-3 ，該標準 chrome 尚未支援
   @page {
     margin: 5cm;
     content: "Page " counter(page) " of " counter(pages);

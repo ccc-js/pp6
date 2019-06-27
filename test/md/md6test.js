@@ -101,24 +101,35 @@ pub6 出版系統\r\n\r\n* [book](book)\r\n* [journal](journal)\r\n
 
 `
 
-let md2 = `
-授權方式： 文章採用 [CC-BY-ND](https://creativecommons.org/licenses/by-nd/4.0/) 授權，程式採用 [MIT](https://opensource.org/licenses/MIT) 授權，原因請看 [授權說明](license.html)
+let md2 = `[course.wiki](../index.html) / [ws](index.html)`
+
+let md3 = `
+授權方式： 文章採用 [CC-BY-ND](https://creativecommons.org/licenses/by-nd/4.0/) 授權，程式採用 [MIT](https://opensource.org/licenses/MIT) 授權，原因請看 [授權說明](license)
+
+[ai](../ccc/ai)
+
+[course.wiki](../index.html) / [ws](index.html)
 
 `
 
 
 
 describe('mdParser test', function() {
-  /*
+
   it('parse', function() {
     let tree = md6.parse(md2)
     console.log('tree=%s', JSON.stringify(tree, null, 2))
   })
-  */
- 
+
   it('htmlRender', function() {
-    let html = md6.toHtml(md2, {standalone:false})
+    let html = md6.toHtml(md2)
     console.log('html=%s', html)
+    // expect(html).to.contain('<i>bbb</i>')
+  })
+
+  it('htmlRender(options)', function() {
+    let r = md6.newHtmlRender({defaultExt: '.html'})
+    console.log('html=%s', r.render(md2))
     // expect(html).to.contain('<i>bbb</i>')
   })
 })

@@ -58,8 +58,7 @@
 
 <h3> Starter template</h3>
 
-<pre><code class="html">
-<!DOCTYPE html>
+<pre><code class="html"><!DOCTYPE html>
 <!-- KaTeX requires the use of the HTML5 doctype. Without it, KaTeX may not render properly -->
 <html>
   <head>
@@ -85,8 +84,7 @@
 <p>Call <code>katex.render</code> to render a TeX expression directly into a DOM element.
 For example:</p>
 
-<pre><code class="js">
-katex.render("c = \\pm\\sqrt{a^2 + b^2}", element, {
+<pre><code class="js">katex.render("c = \\pm\\sqrt{a^2 + b^2}", element, {
     throwOnError: false
 });
 </code></pre>
@@ -94,8 +92,7 @@ katex.render("c = \\pm\\sqrt{a^2 + b^2}", element, {
 <p>Call <code>katex.renderToString</code> to generate an HTML string of the rendered math,
 e.g., for server-side rendering.  For example:</p>
 
-<pre><code class="js">
-var html = katex.renderToString("c = \\pm\\sqrt{a^2 + b^2}", {
+<pre><code class="js">var html = katex.renderToString("c = \\pm\\sqrt{a^2 + b^2}", {
     throwOnError: false
 });
 // '<span class="katex">...</span>'

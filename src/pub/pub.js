@@ -2,9 +2,9 @@
 // ex: node pub6 --path=../doc
 // let {pub6} = require('../src/md6')
 const argv = require('yargs').argv
-const fs6 = require('../src/fs6')
-const md6 = require('../src/md6')
-const mdit = require('./mdit')
+const fs6 = require('../fs6')
+const md6 = require('../md6')
+// const mdit = require('../../tool/mdit')
 const path = require('path')
 const uu6 = require('js6/uu6')
 const JSOX = require('jsox')
@@ -13,11 +13,14 @@ const M = module.exports = {}
 
 let options = {toHtml:true, toPdf:false} // , standalone:true
 
-M.mdToHtml = function (md) {
+M.htmlRender = md6.newHtmlRender({defaultExt: '.html'})
+
+M.mdToHtml = function (md, options) {
   if (md == null) return ''
   // return mdit.render(md)
   // console.log('md=%j', md)
-  return md6.toHtml(md, options)
+  // return md6.toHtml(md, options)
+  return M.htmlRender.render(md)
 }
 
 M.parse = function (md) { // 1   2        3                   4             5              6
@@ -52,7 +55,10 @@ M.bib2html = function (bib) {
 
 M.toHtml = function (md, plugin={}) {
   let {meta, sidebar, footer, header} = plugin
-  let {root} = meta
+  console.log('header=%s', header)
+  let {root, defaultExt} = meta
+  let options = {defaultExt}
+  root = root || 'https://ccc-js.github.io/pp6/doc/'
   let r = M.parse(md), html=null
   if (r == null) return
   // console.log('plugin=%j', plugin)
@@ -75,7 +81,7 @@ M.toHtml = function (md, plugin={}) {
   <aside>
   <label class="toggle" onclick="toggleSidebar()">≡</label>
   <div class="content">
-  ${M.mdToHtml(sidebar)}
+  ${M.mdToHtml(sidebar, options)}
   </div>
   </aside>
   <article>
@@ -84,12 +90,12 @@ M.toHtml = function (md, plugin={}) {
     ${(author == '')? '' : '<p class="author">'+author.replace(/\n/g, '<br>')+'</p>'}
     ${(abstract == '')? '' : '<p class="abstract">'+abstract.replace(/\n/g, '<br>')+'</p>'}
   </div>
-  ${M.mdToHtml(body)}
+  ${M.mdToHtml(body, options)}
   <div class="reference">
   ${!uu6.eq(ref, {}) ? `<h2>Reference</h2>`+M.bib2html(ref) : ''}
   </div>
   </article>
-  <footer>${M.mdToHtml(footer)}</footer>
+  <footer>${M.mdToHtml(footer, options)}</footer>
   <script src="${root}/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.js"></script>
   <script src="${root}/main.js"></script>
@@ -170,7 +176,7 @@ M.convertFile = async function (mdFile, options, plugin={}) {
 
 async function handler(type, dir, attach) {
   let {stack} = attach
-  console.log('  dir=%s', dir)
+  // console.log('  dir=%s', dir)
   switch (type) {
     case 'folder': 
       await folderVisit(dir, attach, handler)
@@ -178,13 +184,10 @@ async function handler(type, dir, attach) {
     case 'file':
       let len = stack.length, plugin = stack[len-1], {base:file} = path.parse(dir)
       if (!file.endsWith('.md') || file.startsWith('_')) break
-      // console.log('file=%s', file)
       // 建立 header (md)
-      let headList = [], relativePath = ''
-      for (let i=len-1; i>=0; i--) {
-        if (!(file === 'index.md' && i === len-1)) { // .../index.html 不用連到自己
-          headList.push(`[${stack[i].pathPart}](${relativePath}index.html)`)
-        }
+      let headList = [], relativePath = '../'
+      for (let i=len-1; i>0; i--) {
+        headList.push(`[${stack[i].pathPart}](${relativePath}${stack[i].pathPart})`)
         relativePath += '../'
       }
       plugin.header = headList.reverse().join(' / ')

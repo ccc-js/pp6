@@ -2,7 +2,7 @@
   "name": "pp6",
   "version": "0.0.1",
   "description": "6th Generation of Portable Platform",
-  "main": "src/pp6.js",
+  "main": "index.js",
   "directories": {
     "example": "example"
   },
@@ -10,6 +10,10 @@
     "test": "mocha",
     "build": "browserify ./ui6/js/ui6export.js -o ./dist/ui6.js && sass ./ui6/css/export.scss ./dist/ui6.css"
   },
+  "bin": {
+    "pp6": "pp6.js"
+  },
+  "preferGlobal": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ccc-js/pp6.git"
@@ -31,10 +35,5 @@
   },
   "homepage": "https://github.com/ccc-js/pp6#readme",
   "dependencies": {
-    "koa": "^2.7.0",
-    "koa-bodyparser": "^4.2.1",
-    "koa-logger": "^3.2.0",
-    "koa-router": "^7.4.0",
-    "koa-static": "^5.0.0"
   }
 }

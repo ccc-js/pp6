@@ -17,31 +17,15 @@ ROW   = \n(.* |)+(.*)
 IMATH = $(.*)$
 MATH  = \n$$(..*)\n$$
 */
-const M = module.exports = require('./generator')
+const M = module.exports = {} // require('./generator')
 
-var lines, lineIdx, lineTop, paragraph
+var lines, lineIdx, lineTop, paragraph, gen
 
 M.compile = function (md, generator) {
-  lines = md.replace(/\r/g, '').replace(/\t/g, '    ').split('\n'); lineTop = lines.length; lineIdx = 0; paragraph={ type:'paragraph', childs:[] }
+  lines = (md+'\n').replace(/\r/g, '').replace(/\t/g, '    ').split('\n'); lineTop = lines.length; lineIdx = 0; paragraph={ type:'paragraph', childs:[] }
   gen = generator
-  // len = md.length; i = 0; ahead = null; aheadStart = -1
   let tree = MD()
   return tree
-}
-
-M.parse = function (text) {
-  return M.compile(text, M.treeGenerator)
-}
-
-// MD = (BLOCK)*
-let MD = function () {
-  let r = {type:'blocks', childs:[]}
-  while (lineIdx < lineTop) {
-    let e = BLOCK()
-    // console.log('e=%j', e)
-    r.childs = r.childs.concat(e)
-  }
-  return gen(r)
 }
 
 let line = function () {
@@ -53,7 +37,7 @@ let genLine = function (line) {
 }
 
 let inline = function (text) {
-  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$(?<math1>.*?)\$)|(<(?<url>.*?)>)|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>[^\"\]]?)")?\)))/g
+  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$`?(?<math1>.*?)`?\$)|(<(?<url>.*?)>)|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>[^\"\]]?)")?\)))/g
   var m, lastIdx = 0, len = text.length
   var r = []
   while ((m = regexp.exec(text)) !== null) {
@@ -77,6 +61,16 @@ let inline = function (text) {
   }
   if (len > lastIdx) r.push(gen({type:'text', body:text.substring(lastIdx, len)}))
   return r
+}
+
+// MD = (BLOCK)*
+let MD = function () {
+  let r = {type:'blocks', childs:[]}
+  while (lineIdx < lineTop) {
+    let e = BLOCK()
+    r.childs = r.childs.concat(e)
+  }
+  return gen(r)
 }
 
 // BLOCK = CODE | MARK | TABBLOCK | TABLE? | MATH? | TITLE | PARAGRAPH
@@ -190,7 +184,7 @@ let REF = function () {
 let HEADER = function () {
   let line1 = lines[lineIdx], line2 = lines[lineIdx+1]
   // console.log('line1=%j', line1)
-  let m = line1.match(/^(#+)(.*)?$/) // # ....
+  let m = line1.match(/^(#+)(.*)$/) // # ....
   // console.log('m=%j', m)
   if (m != null) {
     let r = {type:'header', level:m[1].length, childs:inline(m[2])}
@@ -243,7 +237,9 @@ let LIST = function (level=0) {
       tChilds = LIST(level+1)
       childs.push(tChilds)
       // console.log('tChilds=%j', tChilds)
-      m = line().match(/^(\s*)((\*)|(\d+\.))\s(.*)$/)
+      let line1 = line()
+      if (line1 == null) break
+      m = line1.match(/^(\s*)((\*)|(\d+\.))\s(.*)$/)
       if (m == null) break
     }
     if (m[1].length < level * 4) break
