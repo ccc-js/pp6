@@ -58,7 +58,7 @@ M.toHtml = function (md, plugin={}) {
   console.log('header=%s', header)
   let {root, defaultExt} = meta
   let options = {defaultExt}
-  root = root || 'https://ccc-js.github.io/pp6/doc/'
+  root = root || 'https://ccc-js.github.io/pp6/doc'
   let r = M.parse(md), html=null
   if (r == null) return
   // console.log('plugin=%j', plugin)
