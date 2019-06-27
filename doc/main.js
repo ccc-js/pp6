@@ -2,7 +2,7 @@ var sidebar = null
 
 function init() {
   sidebar = document.querySelector('aside')
-  // sidebar.style.width = '0px'
+  sidebar.style.width = '0px'
   var mathElements = document.getElementsByClassName("math");
   for (var i = 0; i < mathElements.length; i++) {
     var texText = mathElements[i].firstChild;
@@ -16,7 +16,7 @@ function init() {
 }
 
 function toggleSidebar() {
-  sidebar.style.width = (sidebar.style.width == '0px') ? '250px' : '0px'
+  sidebar.style.width = (sidebar.style.width == '0px' || sidebar.style.width == '' ) ? '250px' : '0px'
 }
 
 hljs.initHighlightingOnLoad()

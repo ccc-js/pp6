@@ -37,7 +37,7 @@ let genLine = function (line) {
 }
 
 let inline = function (text) {
-  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$`?(?<math1>.*?)`?\$)|(<(?<url>.*?)>)|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>[^\"\]]?)")?\)))/g
+  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$`?(?<math1>.*?)`?\$)|(<(?<url>.*?)>)|(?<urlfull>(\w*:\/\/\S*))|(?<image>!\[(?<itext>[^\]]*?)\]\((?<ihref>[^\"\]]*?)("(?<ialt>[^\"\]]?)")?\))|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>[^\"\]]?)")?\)))/g
   var m, lastIdx = 0, len = text.length
   var r = []
   while ((m = regexp.exec(text)) !== null) {
@@ -51,7 +51,9 @@ let inline = function (text) {
         body = value
       }
     }
-    if (obj.link != null)
+    if (obj.image != null)
+      obj = {type:'image', text:obj.itext, href:obj.ihref, alt:obj.ialt||''}
+    else if (obj.link != null)
       obj = {type:'link', text:obj.text, href:obj.href, alt:obj.alt||''}
     else 
       obj = {type, body}
@@ -77,11 +79,11 @@ let MD = function () {
 let BLOCK = function () {
   var r = null // ,blockStart = lineIdx
   if (r == null) r = EMPTY()
+  if (r == null) r = MATH()
   if (r == null) r = CODE()
   if (r == null) r = MARK()
   if (r == null) r = TABBLOCK()
-  if (r == null) r = MATH()
-  if (r == null) r = IMAGE()
+  // if (r == null) r = IMAGE()
   if (r == null) r = REF()
   if (r == null) r = HEADER()
   if (r == null) r = HLINE()
@@ -158,12 +160,12 @@ let TABBLOCK = function () {
 
 // MATH = \n$$(\w+)\n(..*)\n$$
 let MATH = function () {
-  if (!line().startsWith('$$')) return null
-  let childs = lineUntil(/^\$\$/)
+  if (!line().startsWith('$$') && !line().startsWith('```math')) return null
+  let childs = lineUntil(/^((\$\$)|(```))/)
   lineIdx ++
   return gen({type:'math', body:childs.join('\n')})
 }
-
+/*
 // IMAGE = \n![.*](.*)
 let IMAGE = function () {
   let m = line().match(/^!\[(.*?)\]\((.*?)(\s*"(.*?)")?\)\s*$/)
@@ -171,7 +173,7 @@ let IMAGE = function () {
   lineIdx++
   return gen({type:'image', alt:m[1], href:m[2], title:m[4]})
 }
-
+*/
 // [id]: url/to/image  "Optional title attribute"
 // REF = \n[.*]:
 let REF = function () {

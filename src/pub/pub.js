@@ -55,7 +55,7 @@ M.bib2html = function (bib) {
 
 M.toHtml = function (md, plugin={}) {
   let {meta, sidebar, footer, header} = plugin
-  console.log('header=%s', header)
+  // console.log('header=%s', header)
   let {root, defaultExt} = meta
   let options = {defaultExt}
   root = root || 'https://ccc-js.github.io/pp6/doc'
@@ -68,19 +68,18 @@ M.toHtml = function (md, plugin={}) {
   <html>
   <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="${root}/atom-one-light.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/atom-one-light.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.css">
-  <link rel="stylesheet" type="text/css" href="${root}/main.css">
+  <link rel="stylesheet" type="text/css" href="file:///D:/ccc/js/pp6/doc/main.css">
   </head>
   <body>
   <title>${title}</title>
   <header>
-    <label class="toggle" onclick="toggleSidebar()">≡</label>
+    <div style="float:left"><label class="toggle" onclick="toggleSidebar()">≡</label>&nbsp;&nbsp;</div>
+    <div style="float:left">${M.mdToHtml(header)}</div>
   </header>
-  <div class="booktitle">${M.mdToHtml(header)}</div>
   <aside>
-  <label class="toggle" onclick="toggleSidebar()">≡</label>
-  <div class="content">
+  <div>
   ${M.mdToHtml(sidebar, options)}
   </div>
   </aside>
@@ -96,9 +95,9 @@ M.toHtml = function (md, plugin={}) {
   </div>
   </article>
   <footer>${M.mdToHtml(footer, options)}</footer>
-  <script src="${root}/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.js"></script>
-  <script src="${root}/main.js"></script>
+  <script src="file:///D:/ccc/js/pp6/doc/main.js"></script>
   </script>
   </body>
   </html>
@@ -185,7 +184,8 @@ async function handler(type, dir, attach) {
       let len = stack.length, plugin = stack[len-1], {base:file} = path.parse(dir)
       if (!file.endsWith('.md') || file.startsWith('_')) break
       // 建立 header (md)
-      let headList = [], relativePath = '../'
+      let p = path.parse(file)
+      let headList = [`[${p.name}](${p.name}.html)`], relativePath = '../'
       for (let i=len-1; i>0; i--) {
         headList.push(`[${stack[i].pathPart}](${relativePath}${stack[i].pathPart})`)
         relativePath += '../'
@@ -207,8 +207,10 @@ async function folderVisit(dir, attach, handler) {
   // let header  = await fs6.readText(path.join(dir, '_header.md'))
   let footer  = await fs6.readText(path.join(dir, '_footer.md'))
   let json6   = await fs6.readText(path.join(dir, '_meta.json6'))
+  if (json6 != null) console.log('json6=%j', json6)
   let meta    = JSOX.parse(json6||'{}')
   meta = Object.assign(meta, parent.meta||{})
+
   // console.log('meta=%j', meta)
   plugin = uu6.defaults({meta, sidebar, footer, pathPart}, parent) // header, 
   stack.push(plugin)

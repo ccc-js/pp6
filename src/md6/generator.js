@@ -49,7 +49,8 @@ class HtmlGenerator extends Generator {
   star1(x) { return `<strong>${rs(x.body)}</strong>` }
   under2(x) { return `<em>${rs(x.body)}</em>` }
   under1(x) { return `<em>${rs(x.body)}</em>` }
-  url(x) { return `<a href="${x.body}">${x.body}</em>` }
+  url(x) { return `<a href="${x.body}">${x.body}</a>` }
+  urlfull(x) { return `<a href="${x.body}">${x.body}</a>` }
   math1(x) { return `<span class="math inline">${x.body}</span>` }
   math(x) { return `<p><span class="math display">\n${x.body}\n</span></p>` }
   link(x) {
@@ -60,6 +61,9 @@ class HtmlGenerator extends Generator {
     else
       return `<a href="${x.href}" alt="${x.alt}">${x.text}</a>`
   }
+  image(x) {
+    return `<img src="${x.href}" alt="${x.alt}">${rs(x.text)}</img>`
+  }
   // block
   blocks(x) { return x.childs.join('\n') }
   header(x) { return `<h${x.level}>${x.childs.join('')}</h${x.level}>` }
@@ -68,7 +72,7 @@ class HtmlGenerator extends Generator {
   code(x) { return `<pre><code class="${x.lang}">${x.body}\n</code></pre>`}
   mark(x) { return `<blockquote>${x.childs.join('\n')}\n</blockquote>` }
   tabBlock(x) { return `<pre>${x.childs.join('\n')}\n</pre>` }
-  image(x) { return `<img src="${x.href}" alt="${x.alt}">${rs(x.title)}</img>` }
+  // image(x) { return `<img src="${x.href}" alt="${x.alt}">${rs(x.title)}</img>` }
   hline(x) { return '<hr>' }
   ref(x) { return '' }
   paragraph(x) { return `<p>${x.childs.join('\n')}</p>` }
