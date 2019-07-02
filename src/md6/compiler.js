@@ -37,7 +37,7 @@ let genLine = function (line) {
 }
 
 let inline = function (text) {
-  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$`?(?<math1>.*?)`?\$)|(<(?<url>.*?)>)|(?<urlfull>(\w*:\/\/\S*))|(?<image>!\[(?<itext>[^\]]*?)\]\((?<ihref>[^\"\]]*?)("(?<ialt>[^\"\]]?)")?\))|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>[^\"\]]?)")?\)))/g
+  var regexp = /((``(?<code2>.*?)``)|(`(?<code1>.*?)`)|(\*\*(?<star2>.*?)\*\*)|(\*(?<star1>.*?)\*)|(__(?<under2>.*)?__)|(_(?<under1>.*?)_)|(\$[`$]?(?<math1>.*?)[`$]?\$)|(<(?<url>.*?)>)|(?<urlfull>(\w*:\/\/\S*))|(?<image>!\[(?<itext>[^\]]*?)\]\((?<ihref>[^\"\]]*?)("(?<ialt>[^\"\]]?)")?\))|(?<link>\[(?<text>[^\]]*?)\]\((?<href>[^\"\]]*?)("(?<alt>[^\"\]]?)")?\)))/g
   var m, lastIdx = 0, len = text.length
   var r = []
   while ((m = regexp.exec(text)) !== null) {
@@ -138,7 +138,7 @@ let CODE = function () {
 let MARK = function () {
   if (!line().startsWith('>')) return null
   let childs = []
-  for (lineIdx++; lineIdx < lineTop; lineIdx++) {
+  for (; lineIdx < lineTop; lineIdx++) {
     line1 = line()
     if (!line().startsWith('>')) break
     childs.push(genLine(line1.substr(1)))
@@ -152,15 +152,15 @@ let TABBLOCK = function () {
   let childs = []
   for (; lineIdx < lineTop; lineIdx++) {
     line1 = line()
-    if (!line().startsWith('    ')) break
-    childs.push(genLine(line1.substr(4)))
+    if (!line().startsWith('    ') && line().trim().length > 0) break
+    childs.push(line1.substr(4))
   }
   return gen({type:'tabBlock', childs})
 }
 
 // MATH = \n$$(\w+)\n(..*)\n$$
 let MATH = function () {
-  if (!line().startsWith('$$') && !line().startsWith('```math')) return null
+  if (line() !== '$$' && line() !== '```math') return null
   let childs = lineUntil(/^((\$\$)|(```))/)
   lineIdx ++
   return gen({type:'math', body:childs.join('\n')})
@@ -233,6 +233,7 @@ let LIST = function (level=0) {
   let listType = (m[2][0]==='*') ? 'ul' : 'ol'
   for (; lineIdx < lineTop; lineIdx++) {
     let tline = line(), tChilds = null
+    if (tline.trim().length === 0) continue
     m = tline.match(/^(\s*)((\*)|(\d+\.))\s(.*)$/)
     if (m == null) break
     if (m[1].length >= (level+1)*4) {

@@ -43,8 +43,8 @@ class Generator {
 class HtmlGenerator extends Generator {
   // inline
   text(x) { return x.body }
-  code2(x) { return `<code>${x.body}</code>` }
-  code1(x) { return `<code>${x.body}</code>` }
+  code2(x) { return `<code>${rs(x.body)}</code>` }
+  code1(x) { return `<code>${rs(x.body)}</code>` }
   star2(x) { return `<strong>${rs(x.body)}</strong>` }
   star1(x) { return `<strong>${rs(x.body)}</strong>` }
   under2(x) { return `<em>${rs(x.body)}</em>` }
@@ -62,16 +62,17 @@ class HtmlGenerator extends Generator {
       return `<a href="${x.href}" alt="${x.alt}">${x.text}</a>`
   }
   image(x) {
-    return `<img src="${x.href}" alt="${x.alt}">${rs(x.text)}</img>`
+    return `<figure>\n  <img src="${x.href}" alt="${x.alt}"></img>\n<figcaption>${rs(x.text)}</figcaption></figure>\n`
   }
+
   // block
   blocks(x) { return x.childs.join('\n') }
   header(x) { return `<h${x.level}>${x.childs.join('')}</h${x.level}>` }
   line(x) { return `${x.childs.join('')}` }
   empty(x) { return `<p></p>\n`.repeat(x.count-1) }
-  code(x) { return `<pre><code class="${x.lang}">${x.body}\n</code></pre>`}
-  mark(x) { return `<blockquote>${x.childs.join('\n')}\n</blockquote>` }
-  tabBlock(x) { return `<pre>${x.childs.join('\n')}\n</pre>` }
+  code(x) { return `<pre class="code"><code class="${x.lang}">${rs(x.body)}\n</code></pre>`}
+  mark(x) { return `<blockquote>\n<p>${x.childs.join('</p>\n<p>')}</p>\n</blockquote>` }
+  tabBlock(x) { return `<pre class="tab">${x.childs.join('\n')}\n</pre>` }
   // image(x) { return `<img src="${x.href}" alt="${x.alt}">${rs(x.title)}</img>` }
   hline(x) { return '<hr>' }
   ref(x) { return '' }
@@ -81,7 +82,9 @@ class HtmlGenerator extends Generator {
   table(x) {
     let len = x.childs.length, list=[]
     for (let ri=0; ri<len; ri++) {
-      let row = x.childs[ri]
+      let row = x.childs[ri] // .trim()
+      let m = row.match(/^\|?(.*?)\|?$/) // 去除前後的 | 
+      if (m != null) row = m[1]
       let rowHtml = ''
       switch (ri) {
         case 0: rowHtml = `<tr><th>${row.replace(/\|/g, '</th><th>')}</th></tr>`; break;

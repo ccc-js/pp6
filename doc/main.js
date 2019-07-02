@@ -19,6 +19,6 @@ function toggleSidebar() {
   sidebar.style.width = (sidebar.style.width == '0px' || sidebar.style.width == '' ) ? '250px' : '0px'
 }
 
-hljs.initHighlightingOnLoad()
+// hljs.initHighlightingOnLoad()
 window.addEventListener('load', init)
 

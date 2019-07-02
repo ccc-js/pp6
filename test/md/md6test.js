@@ -104,21 +104,17 @@ pub6 出版系統\r\n\r\n* [book](book)\r\n* [journal](journal)\r\n
 let md0 = `[course.wiki](../index.html) / [ws](index.html)`
 
 let md2 = `
-授權方式： 文章採用 [CC-BY-ND](https://creativecommons.org/licenses/by-nd/4.0/) 授權，程式採用 [MIT](https://opensource.org/licenses/MIT) 授權，原因請看 [授權說明](license)
 
-[ai](../ccc/ai)
 
-[course.wiki](../index.html) / [ws](index.html)
+f1 | f2 | f3
+---|----|-----
+x11 | x12 | x13
+x21 | x22 | x23
 
-aaa http://misavo.com/nand2tetris/hello.html ddd
-
-\`\`\`math
-\\int_0^x f(x) dx
-\`\`\`
-
-$$
-\\int_0^x f(x) dx
-$$
+|f1 | f2 | f3 |
+|---|----|-----|
+|x11 | x12 | x13|
+|x21 | x22 | x23|
 
 `
 

@@ -24,7 +24,7 @@ M.mdToHtml = function (md, options) {
 }
 
 M.parse = function (md) { // 1   2        3                   4             5              6
-  let m = md.trim().match(/^(```(\w*)?\s*([\s\S]*?)\n```)?\s*([\s\S]*?)\s*?(\n```reference([\s\S]*?)```)?$/)
+  let m = md.trim().match(/^(```(paper)\s*([\s\S]*?)\n```)?\s*([\s\S]*?)\s*?(\n```reference([\s\S]*?)```)?$/)
   if (m == null) return null
   // console.log('m=%j', m.slice(2))
   let type = (m[2]||'').trim()
@@ -68,9 +68,12 @@ M.toHtml = function (md, plugin={}) {
   <html>
   <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/atom-one-light.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.css">
-  <link rel="stylesheet" type="text/css" href="file:///D:/ccc/js/pp6/doc/main.css">
+  <link rel="stylesheet" type="text/css" href="https://ccc-js.github.io/pp6/doc/main.css">
+  <!-- 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/atom-one-light.min.css">
+  <link rel="stylesheet" type="text/css" href="file:///D:/ccc/js/pp6/doc/main.css"> 
+  -->
   </head>
   <body>
   <title>${title}</title>
@@ -95,9 +98,12 @@ M.toHtml = function (md, plugin={}) {
   </div>
   </article>
   <footer>${M.mdToHtml(footer, options)}</footer>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.js"></script>
+  <script src="https://ccc-js.github.io/pp6/doc/main.js"></script>
+  <!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
   <script src="file:///D:/ccc/js/pp6/doc/main.js"></script>
+  -->
   </script>
   </body>
   </html>
@@ -184,10 +190,12 @@ async function handler(type, dir, attach) {
       let len = stack.length, plugin = stack[len-1], {base:file} = path.parse(dir)
       if (!file.endsWith('.md') || file.startsWith('_')) break
       // 建立 header (md)
-      let p = path.parse(file)
-      let headList = [`[${p.name}](${p.name}.html)`], relativePath = '../'
-      for (let i=len-1; i>0; i--) {
-        headList.push(`[${stack[i].pathPart}](${relativePath}${stack[i].pathPart})`)
+      // let p = path.parse(file)
+      let relativePath = '../'
+      let headList = [] // [`[${p.name}](${p.name}.html)`]
+      for (let i=len-1; i>=1; i--) {
+        let name = stack[i].pathPart // (i===0) ? '目錄' : 
+        headList.push(`[${name}](${relativePath}${stack[i].pathPart})`)
         relativePath += '../'
       }
       plugin.header = headList.reverse().join(' / ')

@@ -1,0 +1,34 @@
+<html>
+<head>
+<style>
+pre {
+  max-width: 800px; 
+  overflow: auto;
+}
+</style>
+</head>
+<body>
+<pre>
+<code>
+    extend(F.QuotentGroup, F.Group);
+
+    // Normal SubGroup : gH = Hg
+    // https://en.wikipedia.org/wiki/Normal_subgroup
+    F.NormalSubGroup={
+      op:function(x,y) {
+      },
+      inv:function(x) {
+      },
+    }
+    
+    extend(F.NormalSubGroup, F.Group);
+    
+    // 群同構第一定理： 給定 GG和 G ′ 兩個群，和 f : G → G ′ 群同態。則 Ker ⁡ f 是一個 G 的正規子群。
+    // 群同構第二定理：給定群 G 、其正規子群 N、其子群 H，則 N ∩ H 是 H 的正規子群，且我們有群同構如下： H / ( H ∩ N ) ≃ H N / N
+    // 群同構第三定理： 給定群 G， N 和 M，M 為 G 的正規子群，滿足 M 包含於 N ，則 N / M 是 G / M 的正規子群，且有如下的群同構： ( G / M ) / ( N / M ) ≃ G / N .
+    
+
+</code>
+</pre>
+</body>
+</html>
