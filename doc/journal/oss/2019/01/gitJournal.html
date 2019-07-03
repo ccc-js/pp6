@@ -2,34 +2,32 @@
   <html>
   <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://ccc-js.github.io/pp6/doc/atom-one-light.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.css">
   <link rel="stylesheet" type="text/css" href="https://ccc-js.github.io/pp6/doc/main.css">
+  <!-- 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/atom-one-light.min.css">
+  <link rel="stylesheet" type="text/css" href="file:///D:/ccc/js/pp6/doc/main.css"> 
+  -->
   </head>
   <body>
   <title>GitJournal: 基於 git 的期刊出版新模式</title>
   <header>
-    <label class="toggle" onclick="toggleSidebar()">≡</label>
+    <div style="float:left"><label class="toggle" onclick="toggleSidebar()">≡</label>&nbsp;&nbsp;</div>
+    <div style="float:left"><p><a href="../../../../journal.html" alt="">journal</a> / <a href="../../../oss.html" alt="">oss</a> / <a href="../../2019.html" alt="">2019</a> / <a href="../01.html" alt="">01</a></p>
+</div>
   </header>
-  <div class="booktitle"></div>
   <aside>
-  <label class="toggle" onclick="toggleSidebar()">≡</label>
-  <div class="content">
+  <div>
   <p><a href="./index.html" alt="">開源科學期刊</a></p>
 
 <ul>
     <li><a href="2019/index.html" alt="">2019</a></li>
-</ul>
-
-<ul>
     <li><a href="2019/01/index.html" alt="">1 月</a></li>
     <li><a href="2019/02/index.html" alt="">2 月</a></li>
     <li><a href="2019/03/index.html" alt="">3 月</a></li>
     <li><a href="2019/04/index.html" alt="">4 月</a></li>
     <li><a href="2019/05/index.html" alt="">5 月</a></li>
 </ul>
-<p></p>
-
   </div>
   </aside>
   <article>
@@ -47,7 +45,6 @@
     <li>期刊出版商的權力過大，並且透過壟斷論文商業權來營利，未付費的使用者通常無法閱讀這些研究論文。</li>
     <li>投稿的過程冗長，導致學術研究沒辦法及時有效的出版，這對學術的發展有不利的影響。</li>
 </ol>
-
 <p>這些問題讓學術界陷入了困境，我們需要新的做法來解決這些問題！</p>
 
 <h2> 方法 -- 採用 github 作為期刊出版平台</h2>
@@ -84,7 +81,7 @@
 
 <p>以下是一份簡易的論文樣版 paper.md，該樣板一開始是 JSON6 格式的論文描述資訊，接著是 Markdown 的內文，其中插入了表格、數學式還有圖片。</p>
 
-<pre><code class="markdown">    ```paper
+<pre class="code"><code class="markdown">    ```paper
     title: "A method of xxx to do ooo",
     abstract: "A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. 
     A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. 
@@ -167,7 +164,10 @@
 
 <p>下圖是上述《論文樣版》經 pandoc 轉換後以 HTML 和 PDF 兩種模式呈現在瀏覽器中的樣子，我們設計的樣板盡可能採用統一的學術風格呈現方式，但是讓 HTML 可以適應較小的手機畫面呈現方式。</p>
 
-<img src="./img/mdExampleHtml.png" alt=""></img>
+<p><figure>
+  <img src="./img/mdExampleHtml.png" alt=""></img>
+<figcaption></figcaption></figure>
+</p>
 <p></p>
 
 <h2> 結語</h2>
@@ -177,6 +177,8 @@
 <p>不過這些瑕疵都可以用某些方式彌補，例如改在上方或下方標號等等，但這些是技術不足問題，只要逐步的改進，應該是可以克服的。</p>
 
 <p>我們希望能透過《引入 github + markdown 到學術論文的撰寫、投稿、與期刊出版經營領域》，為學術界注入更多的活力，讓除了論文以外的資訊，也能被《論文撰寫者》與《期刊出版者》保存下來。</p>
+
+<p>我們希望這樣的期刊出版方式，能夠被學術界所接受，讓知識能更完整的保存下來，也讓研究能更容易被驗證與比較，這或許能讓學術的進展更快速！</p>
 
   <div class="reference">
   <h2>Reference</h2>
@@ -273,10 +275,14 @@
   </div>
   </article>
   <footer><p>授權方式： 文章採用 <a href="https://creativecommons.org/licenses/by-nd/4.0/" alt="">CC-BY-ND</a> 授權，程式採用 <a href="https://opensource.org/licenses/MIT" alt="">MIT</a> 授權，原因請看 <a href="license.html" alt="">授權說明</a></p>
+<p></p>
 </footer>
-  <script src="https://ccc-js.github.io/pp6/doc/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.js"></script>
   <script src="https://ccc-js.github.io/pp6/doc/main.js"></script>
+  <!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
+  <script src="file:///D:/ccc/js/pp6/doc/main.js"></script>
+  -->
   </script>
   </body>
   </html>

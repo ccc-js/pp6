@@ -2,43 +2,39 @@
   <html>
   <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://ccc-js.github.io/pp6/doc/atom-one-light.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.css">
-  <link rel="stylesheet" type="text/css" href="../../../../main.css">
+  <link rel="stylesheet" type="text/css" href="https://ccc-js.github.io/pp6/doc/main.css">
+  <!-- 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/atom-one-light.min.css">
+  <link rel="stylesheet" type="text/css" href="file:///D:/ccc/js/pp6/doc/main.css"> 
+  -->
   </head>
   <body>
   <title>A method of xxx to do ooo</title>
   <header>
-    <label class="toggle" onclick="toggleSidebar()">≡</label>
+    <div style="float:left"><label class="toggle" onclick="toggleSidebar()">≡</label>&nbsp;&nbsp;</div>
+    <div style="float:left"><p><a href="../../../../journal.html" alt="">journal</a> / <a href="../../../oss.html" alt="">oss</a> / <a href="../../2019.html" alt="">2019</a> / <a href="../01.html" alt="">01</a></p>
+</div>
   </header>
-  <div class="booktitle"></div>
   <aside>
-  <label class="toggle" onclick="toggleSidebar()">≡</label>
-  <div class="content">
+  <div>
   <p><a href="./index.html" alt="">開源科學期刊</a></p>
 
 <ul>
     <li><a href="2019/index.html" alt="">2019</a></li>
-</ul>
-
-<ul>
     <li><a href="2019/01/index.html" alt="">1 月</a></li>
     <li><a href="2019/02/index.html" alt="">2 月</a></li>
     <li><a href="2019/03/index.html" alt="">3 月</a></li>
     <li><a href="2019/04/index.html" alt="">4 月</a></li>
     <li><a href="2019/05/index.html" alt="">5 月</a></li>
 </ul>
-<p></p>
-
   </div>
   </aside>
   <article>
   <div class="header">
     <h1 class="title">A method of xxx to do ooo</h1>
     <p class="author">ccc</p>
-    <p class="abstract">A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. 
-<br>A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. 
-<br>A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. </p>
+    <p class="abstract">A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. <br>A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. <br>A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. A method of xxx to do ooo with yyy. </p>
   </div>
   <h2> Introduction</h2>
 
@@ -46,9 +42,12 @@
 
 <h2> Related Works 文獻回顧</h2>
 
-<p>如文獻 <a href="#ccc2019" alt="">1</a>, <a href="#kour2014fast" alt="">2</a> 所說的，....</p>
+<p>如文獻 <a href="#ccc2019.html" alt="">1</a>, <a href="#kour2014fast.html" alt="">2</a> 所說的，....</p>
 
-<img src="img/picture.png" alt=""></img>
+<p><figure>
+  <img src="img/picture.png" alt=""></img>
+<figcaption></figcaption></figure>
+</p>
 
 <h2> Our Method</h2>
 
@@ -59,7 +58,7 @@
 <p>inline: <span class="math inline">\int_0^{x} f(x) dx</span></p>
 <p></p>
 
-<pre><code class="js">function add(a,b) {
+<pre class="code"><code class="js">function add(a,b) {
   return a+b
 }
 </code></pre>
@@ -84,6 +83,8 @@
 <p></p>
 
 <h2> Conclusions</h2>
+
+<p>So, that's all what his paper about ...</p>
 
   <div class="reference">
   <h2>Reference</h2>
@@ -116,10 +117,14 @@
   </div>
   </article>
   <footer><p>授權方式： 文章採用 <a href="https://creativecommons.org/licenses/by-nd/4.0/" alt="">CC-BY-ND</a> 授權，程式採用 <a href="https://opensource.org/licenses/MIT" alt="">MIT</a> 授權，原因請看 <a href="license.html" alt="">授權說明</a></p>
+<p></p>
 </footer>
-  <script src="https://ccc-js.github.io/pp6/doc/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.js"></script>
   <script src="https://ccc-js.github.io/pp6/doc/main.js"></script>
+  <!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
+  <script src="file:///D:/ccc/js/pp6/doc/main.js"></script>
+  -->
   </script>
   </body>
   </html>
