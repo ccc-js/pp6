@@ -6,6 +6,15 @@
 4. nj6: node.js
 5. sv6: server
 6. ui6: user interface (Browser)
+7. md6: markdown parser & render
+
+## Install & Use
+
+```
+$ npm i -g pp6
+
+$ pp6 pub --path=[path.to.your.markdown.document.folder]
+```
 
 ### Distribution
 

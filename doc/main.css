@@ -92,6 +92,22 @@ aside li {
   font-size: 28px;
 }
 
+/* -------------------------- paper -------------------------------*/
+.header {
+  text-align: center;
+  margin: auto;
+  max-width: 85%;
+}
+
+.abstract {
+  margin: 30px;
+  text-align: left;
+}
+
+.abstract h2 {
+  text-align: center;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin: 15px 0px;
   font-family: "Times New Roman", 標楷體;

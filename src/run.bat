@@ -1,0 +1,1 @@
+node pp6 pub --path=../../course

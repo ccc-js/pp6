@@ -1,6 +1,6 @@
 {
   "name": "pp6",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "description": "6th Generation of Portable Platform",
   "main": "index.js",
   "directories": {
@@ -35,5 +35,8 @@
   },
   "homepage": "https://github.com/ccc-js/pp6#readme",
   "dependencies": {
+    "js6": "^0.2.0",
+    "jsox": "^1.1.114",
+    "yargs": "^13.2.4"
   }
 }

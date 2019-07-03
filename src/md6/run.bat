@@ -1,1 +1,0 @@
-node pub --path=../../../course

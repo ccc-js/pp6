@@ -79,7 +79,7 @@ M.toHtml = function (md, plugin={}) {
   <div class="header">
     ${(title == '')? '' : '<h1 class="title">'+title+'</h1>' }
     ${(author == '')? '' : '<p class="author">'+author.replace(/\n/g, '<br>')+'</p>'}
-    ${(abstract == '')? '' : '<p class="abstract">'+abstract.replace(/\n/g, '<br>')+'</p>'}
+    ${(abstract == '')? '' : '<p class="abstract"><h2>Abstract</h2>\n'+abstract.replace(/\n/g, '<br>')+'</p>'}
   </div>
   ${M.mdToHtml(body, options)}
   <div class="reference">
