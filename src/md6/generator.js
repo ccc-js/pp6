@@ -56,6 +56,7 @@ class HtmlGenerator extends Generator {
   link(x) {
     let defExt = this.options.defaultExt || ''
     let ext = path.extname(x.href)
+    // console.log('defExt=%s', defExt)
     if (x.href.indexOf('://') < 0 && ext === '')
       return `<a href="${x.href}${defExt}" alt="${x.alt}">${x.text}</a>`
     else

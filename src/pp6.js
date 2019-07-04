@@ -1,13 +1,16 @@
 #!/usr/bin/env node
-// ex: node pp6 --path=../doc
 const argv = require('yargs').argv
-const pub = require('./md6/pub')
+const pub = require('./app/pub')
+const server = require('./app/server')
 
 let op = argv._[0]
-// console.log('op=%s', op, 'argv._=', argv._)
 
 switch (op) {
-  case 'pub': pub.convertAll(argv.path); break
+  case 'pub': pub.convertAll(argv.path); break // node pp6 pub --path=../../course
+  case 'server': server.run({
+      port: argv.port || 3000, 
+      root: argv.root || './'
+    }); break // node pp6 server --port=80
   default: console.log('Error: op=%s not found!', op)
 }
 

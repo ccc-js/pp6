@@ -1,5 +1,5 @@
 const fs6 = require('../fs6')
-const md6 = require('.')
+const md6 = require('../md6')
 // const mdit = require('../../tool/mdit')
 const path = require('path')
 const uu6 = require('js6/uu6')
@@ -44,10 +44,23 @@ M.bib2html = function (bib) {
   return `\n<ol class="referene">\n${refs.join('\n')}\n</ol>`
 }
 
-M.toHtml = function (md, plugin={}) {
+M.path2link = function (fpath) {
+  // console.log('fpath=%j', fpath)
+  let parts = fpath.split('/')
+  let list = []
+  for (let i=0; i<parts.length; i++) {
+    if (parts[i].trim() === '') continue
+    list.push(`[${parts[i]}](${parts.slice(0, i+1).join('/')})`)
+  }
+  // console.log('list=%j', list)
+  return list.join(' / ')
+}
+
+M.toHtml = function (md, plugin={meta:{}}) {
   let {meta, sidebar, footer, header} = plugin
   let {root, defaultExt} = meta
   let options = {defaultExt}
+  // console.log('options=%j', options)
   root = root || 'https://ccc-js.github.io/pp6/doc'
   let r = M.parse(md), html=null
   if (r == null) return
@@ -60,8 +73,8 @@ M.toHtml = function (md, plugin={}) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.2/katex.min.css">
   <link rel="stylesheet" type="text/css" href="https://ccc-js.github.io/pp6/doc/main.css">
   <!-- 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/atom-one-light.min.css">
   <link rel="stylesheet" type="text/css" href="file:///D:/ccc/js/pp6/doc/main.css"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/atom-one-light.min.css">
   -->
   </head>
   <body>
@@ -79,7 +92,7 @@ M.toHtml = function (md, plugin={}) {
   <div class="header">
     ${(title == '')? '' : '<h1 class="title">'+title+'</h1>' }
     ${(author == '')? '' : '<p class="author">'+author.replace(/\n/g, '<br>')+'</p>'}
-    ${(abstract == '')? '' : '<p class="abstract"><h2>Abstract</h2>\n'+abstract.replace(/\n/g, '<br>')+'</p>'}
+    ${(abstract == '')? '' : '<div class="abstract"><h2>Abstract</h2>\n<p>'+abstract.replace(/\n/g, '<br>')+'</p></div>'}
   </div>
   ${M.mdToHtml(body, options)}
   <div class="reference">

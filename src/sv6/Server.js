@@ -17,9 +17,15 @@ class Server {
     this.koa.use(this.logger)
   }
 
-  staticFolder(path) {
+  serveStatic(path) {
     this.koa.use(this.koaStaic(path))
     return this
+  }
+
+  run(arg) {
+    this.root = arg.root
+    this.koa.listen(arg.port)
+    console.log('server run at http://localhost:%d/', arg.port)
   }
 }
 
